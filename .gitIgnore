@@ -14,11 +14,10 @@ build/
 out/
 *.tsbuildinfo
 
-# Environment variables (keep scrtKey.txt but ignore local overrides)
+# Environment variables
 .env.local
 .env.*.local
 .env
-# Note: scrtKey.txt is committed for reference but should be protected in real scenarios
 
 # IDE
 .vscode/
@@ -60,3 +59,7 @@ logs/
 .env.development.local
 .env.test.local
 
+# Documentation & Secrets
+COMPLETION_SUMMARY.md
+QUICK_START.md
+scrtKey.txt
