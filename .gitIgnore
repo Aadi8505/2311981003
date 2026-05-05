@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+npm-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Environment variables (keep scrtKey.txt but ignore local overrides)
+.env.local
+.env.*.local
+.env
+# Note: scrtKey.txt is committed for reference but should be protected in real scenarios
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.eslintcache
+.stylelintcache
+
+# Runtime
+dist-ssr
+*.local
+server.log
+*.pid
+
+# Testing
+coverage/
+*.lcov
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Misc
+*.bak
+*.backup
+~*
+
+# Logs
+logs/
+*.log
+
+# System files
+.env.production.local
+.env.development.local
+.env.test.local
