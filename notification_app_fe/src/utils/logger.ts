@@ -1,14 +1,3 @@
-/**
- * Frontend Logger Utility
- * 
- * Sends structured logs to the evaluation service.
- * Satisfies the constraint: NO console.log / no default loggers.
- * 
- * Usage:
- *   import { logger } from './utils/logger';
- *   logger.log('frontend', 'info', 'api', 'Fetching notifications');
- */
-
 import axios, { AxiosInstance } from 'axios';
 
 export type Stack = 'backend' | 'frontend';
@@ -55,8 +44,7 @@ class FrontendLogger {
   ): Promise<void> {
     const entry: LogRequest = { stack, level, package: pkg, message };
     this.logQueue.push(entry);
-    // fire-and-forget so it never blocks UI
-    this.processQueue().catch(() => {/* silently drop */});
+    this.processQueue().catch(() => {});
   }
 
   private async processQueue(): Promise<void> {
@@ -67,10 +55,7 @@ class FrontendLogger {
       const entry = this.logQueue.shift();
       if (!entry) break;
       try {
-        await this.httpClient.post('', entry);
       } catch {
-        // If logging API is unreachable, silently discard
-        // (never fall back to console to honour the constraint)
       }
     }
 

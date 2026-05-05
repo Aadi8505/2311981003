@@ -1,10 +1,3 @@
-/**
- * Notification API Service
- * Frontend service for communicating with backend
- * 
- * Logging: uses custom FrontendLogger (no console.log/console.error)
- */
-
 import axios, { AxiosInstance } from 'axios';
 import { ApiResponse, PriorityNotification, NotificationType } from '../types';
 import { logger } from '../utils/logger';
@@ -24,9 +17,6 @@ export class NotificationApiService {
     });
   }
 
-  /**
-   * Get top priority notifications (all types)
-   */
   async getPriorityNotifications(limit: number = 10): Promise<PriorityNotification[]> {
     try {
       logger.log('frontend', 'info', 'api', `Fetching priority notifications: limit=${limit}`);
@@ -53,9 +43,6 @@ export class NotificationApiService {
     }
   }
 
-  /**
-   * Get top priority notifications filtered by type
-   */
   async getPriorityNotificationsByType(
     type: NotificationType,
     limit: number = 10
@@ -85,9 +72,6 @@ export class NotificationApiService {
     }
   }
 
-  /**
-   * Get notification statistics
-   */
   async getStats() {
     try {
       logger.log('frontend', 'info', 'api', 'Fetching notification statistics');
@@ -107,9 +91,6 @@ export class NotificationApiService {
     }
   }
 
-  /**
-   * Health check
-   */
   async healthCheck(): Promise<boolean> {
     try {
       logger.log('frontend', 'debug', 'api', 'Performing health check');
@@ -122,9 +103,6 @@ export class NotificationApiService {
     }
   }
 
-  /**
-   * Set authorization token
-   */
   setAuthToken(token: string): void {
     this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }

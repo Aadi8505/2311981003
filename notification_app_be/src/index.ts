@@ -1,21 +1,9 @@
-/**
- * Campus Notification System - Backend
- * Production-Grade Express.js Application
- * 
- * Run: npm run dev (development)
- * Run: npm start (production)
- */
-
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { Logger, initializeLogger } from './middleware/logger';
 import { requestLoggingMiddleware, errorLoggingMiddleware } from './middleware/expressMiddleware';
 import { config, validateConfig } from './config';
 import { createNotificationRoutes } from './routes/notificationRoutes';
-
-// ============================================================================
-// INITIALIZATION
-// ============================================================================
 
 class NotificationBackend {
   private app: Express;
@@ -26,22 +14,14 @@ class NotificationBackend {
     this.app = express();
     this.port = config.PORT as number;
 
-    // Initialize logger with API credentials
     this.logger = initializeLogger(config.LOG_API_URL, config.ACCESS_TOKEN);
-
-    // Validate configuration
     validateConfig();
   }
 
-  /**
-   * Setup middleware
-   */
   private setupMiddleware(): void {
-    // Body parser middleware
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-    // CORS middleware
     this.app.use(cors({
       origin: config.CORS_ORIGIN,
       credentials: true,
@@ -49,10 +29,8 @@ class NotificationBackend {
       allowedHeaders: ['Content-Type', 'Authorization']
     }));
 
-    // Request/Response logging middleware
     this.app.use(requestLoggingMiddleware(this.logger));
 
-    // Custom middleware to attach logger and requestID to request
     this.app.use((req: any, _res: Response, next: NextFunction) => {
       req.logger = this.logger;
       next();
@@ -66,11 +44,7 @@ class NotificationBackend {
     );
   }
 
-  /**
-   * Setup routes
-   */
   private setupRoutes(): void {
-    // Root endpoint
     this.app.get('/', (req: Request, res: Response) => {
       res.status(200).json({
         message: 'Campus Notification System Backend',
@@ -86,10 +60,8 @@ class NotificationBackend {
       });
     });
 
-    // API Routes
     this.app.use('/api/notifications', createNotificationRoutes(this.logger));
 
-    // Root API endpoint
     this.app.get('/api', (req: Request, res: Response) => {
       res.status(200).json({
         message: 'Campus Notification System API',
@@ -98,7 +70,6 @@ class NotificationBackend {
       });
     });
 
-    // 404 handler
     this.app.use((req: Request, res: Response) => {
       this.logger.log(
         'backend',
@@ -118,7 +89,6 @@ class NotificationBackend {
       });
     });
 
-    // Error handler (must be last)
     this.app.use(errorLoggingMiddleware(this.logger));
 
     this.logger.log(
@@ -129,9 +99,6 @@ class NotificationBackend {
     );
   }
 
-  /**
-   * Start server
-   */
   async start(): Promise<void> {
     try {
       this.setupMiddleware();
@@ -175,9 +142,6 @@ class NotificationBackend {
           'config',
           'SIGTERM received, shutting down gracefully'
         );
-
-        // Flush any pending logs
-        await this.logger.flush();
         process.exit(0);
       });
 
@@ -188,9 +152,6 @@ class NotificationBackend {
           'config',
           'SIGINT received, shutting down gracefully'
         );
-
-        // Flush any pending logs
-        await this.logger.flush();
         process.exit(0);
       });
 

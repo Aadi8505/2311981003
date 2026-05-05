@@ -1,8 +1,3 @@
-/**
- * Filter Bar Component
- * Allows filtering by notification type
- */
-
 import React from "react";
 import {
   Box,
@@ -43,13 +38,13 @@ const FilterBar: React.FC<FilterBarProps> = ({
   const getButtonColor = (type: string) => {
     switch (type) {
       case "Placement":
-        return "#4caf50"; // Green
+        return "#4caf50";
       case "Result":
-        return "#2196f3"; // Blue
+        return "#2196f3";
       case "Event":
-        return "#ff9800"; // Orange
+        return "#ff9800";
       case "All":
-        return "#757575"; // Gray
+        return "#757575";
       default:
         return "#757575";
     }

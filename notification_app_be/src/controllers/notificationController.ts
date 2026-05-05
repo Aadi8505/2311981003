@@ -1,8 +1,3 @@
-/**
- * Notification Controller
- * Handles all notification-related HTTP requests
- */
-
 import { Request, Response } from 'express';
 import { Logger } from '../middleware/logger';
 import PriorityNotificationService from '../services/priorityNotificationService';
@@ -23,10 +18,6 @@ export class NotificationController {
     this.priorityService = new PriorityNotificationService(logger);
   }
 
-  /**
-   * GET /api/notifications/priority
-   * Get top N notifications sorted by priority
-   */
   async getPriorityNotifications(req: RequestWithLogger, res: Response): Promise<void> {
     try {
       const limit = Math.min(
@@ -92,14 +83,10 @@ export class NotificationController {
     }
   }
 
-  /**
-   * GET /api/notifications/priority/:type
-   * Get top N notifications filtered by type
-   */
   async getPriorityByType(req: RequestWithLogger, res: Response): Promise<void> {
     try {
       const type = req.params.type as NotificationType;
-      const validTypes: NotificationType[] = ['Event', 'Result', 'Placement'];
+      const validTypes: NotificationType[] = ['Placement', 'Result', 'Event'];
 
       if (!validTypes.includes(type)) {
         const logger = req.logger || this.logger;
@@ -183,10 +170,6 @@ export class NotificationController {
     }
   }
 
-  /**
-   * GET /api/notifications/health
-   * Health check endpoint
-   */
   async healthCheck(req: RequestWithLogger, res: Response): Promise<void> {
     try {
       const logger = req.logger || this.logger;
@@ -229,10 +212,6 @@ export class NotificationController {
     }
   }
 
-  /**
-   * GET /api/notifications/stats
-   * Get notification statistics
-   */
   async getStats(req: RequestWithLogger, res: Response): Promise<void> {
     try {
       const logger = req.logger || this.logger;
@@ -244,8 +223,7 @@ export class NotificationController {
         `[${req.requestID}] Statistics requested`
       );
 
-      // Fetch notifications to calculate stats
-      const allNotifications = await this.priorityService.getTopNotifications(50);
+      const allNotifications = await this.priorityService.getTopNotifications(1000);
 
       const stats = {
         total: allNotifications.length,
@@ -288,8 +266,10 @@ export class NotificationController {
         success: false,
         error: {
           code: 'STATS_ERROR',
-          message: 'Failed to calculate statistics'
-        }
+          message: 'Failed to calculate statistics',
+          requestID: req.requestID
+        },
+        timestamp: new Date().toISOString()
       });
     }
   }

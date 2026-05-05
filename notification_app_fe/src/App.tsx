@@ -1,8 +1,3 @@
-/**
- * Main App Component
- * Campus Notification System - Frontend
- */
-
 import React, { useState, useEffect, useCallback } from "react";
 import {
   CssBaseline,
@@ -46,46 +41,24 @@ function App() {
   const [themeMode, setThemeMode] = useState<ThemeMode>("light");
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
-  // Material UI Theme
   const theme = createTheme({
     palette: {
       mode: themeMode,
-      primary: {
-        main: "#1976d2",
-      },
-      secondary: {
-        main: "#dc004e",
-      },
-      success: {
-        main: "#4caf50",
-      },
-      warning: {
-        main: "#ff9800",
-      },
-      info: {
-        main: "#2196f3",
-      },
-      error: {
-        main: "#f44336",
-      },
+      primary: { main: "#1976d2" },
+      secondary: { main: "#dc004e" },
+      success: { main: "#4caf50" },
+      warning: { main: "#ff9800" },
+      info: { main: "#2196f3" },
+      error: { main: "#f44336" },
     },
     typography: {
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-      h4: {
-        fontWeight: 700,
-      },
-      h5: {
-        fontWeight: 700,
-      },
-      h6: {
-        fontWeight: 700,
-      },
+      h4: { fontWeight: 700 },
+      h5: { fontWeight: 700 },
+      h6: { fontWeight: 700 },
     },
   });
 
-  /**
-   * Fetch notifications from backend
-   */
   const fetchNotifications = useCallback(async () => {
     setLoading(true);
     setError(null);

@@ -1,7 +1,3 @@
-/**
- * TypeScript Types and Interfaces
- */
-
 export type NotificationType = 'Event' | 'Result' | 'Placement';
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 export type Stack = 'backend' | 'frontend';

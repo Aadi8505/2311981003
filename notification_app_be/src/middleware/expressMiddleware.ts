@@ -1,16 +1,6 @@
-/**
- * Express Middleware for request/response logging
- * 
- * Usage:
- *   app.use(requestLoggingMiddleware(logger));
- */
-
 import { Request, Response, NextFunction } from 'express';
 import { Logger } from './logger';
 
-/**
- * Express middleware to log all requests and responses
- */
 export function requestLoggingMiddleware(logger: Logger) {
   return (req: Request, res: Response, next: NextFunction) => {
     const startTime = Date.now();
@@ -77,9 +67,6 @@ export function requestLoggingMiddleware(logger: Logger) {
   };
 }
 
-/**
- * Error handling middleware
- */
 export function errorLoggingMiddleware(logger: Logger) {
   return (err: any, req: Request, res: Response, next: NextFunction) => {
     const requestID = (req as any).requestID || 'unknown';

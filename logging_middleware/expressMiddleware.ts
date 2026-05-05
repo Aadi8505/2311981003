@@ -1,16 +1,6 @@
-/**
- * Express Middleware for request/response logging
- * 
- * Usage:
- *   app.use(requestLoggingMiddleware(logger));
- */
-
 import { Request, Response, NextFunction } from 'express';
 import { Logger } from './logger';
 
-/**
- * Express middleware to log all requests and responses
- */
 export function requestLoggingMiddleware(logger: Logger) {
   return (req: Request, res: Response, next: NextFunction) => {
     const startTime = Date.now();
@@ -19,11 +9,9 @@ export function requestLoggingMiddleware(logger: Logger) {
     const path = req.path;
     const ip = req.ip;
 
-    // Attach logger to request for use in handlers
     (req as any).logger = logger;
     (req as any).requestID = requestID;
 
-    // Log incoming request
     logger.log(
       'backend',
       'info',
@@ -38,14 +26,12 @@ export function requestLoggingMiddleware(logger: Logger) {
       }
     );
 
-    // Capture response
     const originalSend = res.send;
 
     res.send = function(data: any) {
       const duration = Date.now() - startTime;
       const statusCode = res.statusCode;
 
-      // Determine log level based on status code
       let level: 'debug' | 'info' | 'warn' | 'error' = 'info';
       if (statusCode >= 500) {
         level = 'error';
@@ -77,13 +63,10 @@ export function requestLoggingMiddleware(logger: Logger) {
   };
 }
 
-/**
- * Error handling middleware
- */
 export function errorLoggingMiddleware(logger: Logger) {
   return (err: any, req: Request, res: Response, next: NextFunction) => {
-    const requestID = (req as any).requestID || 'unknown';
-    
+    const requestID = (req as any).requestID || generateRequestID();
+
     logger.log(
       'backend',
       'error',
@@ -109,11 +92,8 @@ export function errorLoggingMiddleware(logger: Logger) {
   };
 }
 
-/**
- * Generate unique request ID
- */
 function generateRequestID(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  return `${Date.now()}-${Math.random().toString(36).substring(7)}`;
 }
 
 export default requestLoggingMiddleware;

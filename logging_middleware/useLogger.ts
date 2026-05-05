@@ -1,24 +1,11 @@
-/**
- * React Hook for logging
- * 
- * Usage:
- *   const logger = useLogger();
- *   logger.log("frontend", "info", "component", "Component mounted");
- */
-
 import { useEffect, useRef, useCallback } from 'react';
 import { Logger, getLogger } from './logger';
 
-/**
- * React hook to use logger in components
- */
 export function useLogger(): Logger {
   const loggerRef = useRef<Logger | null>(null);
 
-  // Initialize or get existing logger
   useEffect(() => {
     if (!loggerRef.current) {
-      // Get environment variables
       const apiUrl = process.env.REACT_APP_LOG_API_URL || 
                      'http://20.207.122.201/evaluation-service/logs';
       const accessToken = process.env.REACT_APP_ACCESS_TOKEN || '';
@@ -34,9 +21,6 @@ export function useLogger(): Logger {
   return loggerRef.current || getLogger();
 }
 
-/**
- * Hook to log component lifecycle events
- */
 export function useComponentLogger(componentName: string) {
   const logger = useLogger();
 

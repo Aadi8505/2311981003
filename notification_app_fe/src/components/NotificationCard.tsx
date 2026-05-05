@@ -1,8 +1,3 @@
-/**
- * Notification Card Component
- * Displays individual notification
- */
-
 import React from "react";
 import {
   Card,
@@ -35,7 +30,6 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Get icon based on notification type
   const getTypeIcon = () => {
     switch (notification.Type) {
       case "Placement":
@@ -49,7 +43,6 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     }
   };
 
-  // Get color based on notification type
   const getTypeColor = () => {
     switch (notification.Type) {
       case "Placement":
@@ -63,12 +56,11 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     }
   };
 
-  // Get priority badge color
   const getPriorityColor = () => {
     const score = notification.priorityScore || 0;
-    if (score >= 50) return "error"; // High priority (red)
-    if (score >= 30) return "warning"; // Medium priority (orange)
-    return "success"; // Low priority (green)
+    if (score >= 50) return "error";
+    if (score >= 30) return "warning";
+    return "success";
   };
 
   const formatDate = (dateString: string) => {
@@ -91,7 +83,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     <Card
       sx={{
         mb: 2,
-        borderLeft: `4px solid ${theme.palette[getTypeColor() as keyof typeof theme.palette].main}`,
+        borderLeft: `4px solid ${(theme.palette[getTypeColor() as keyof typeof theme.palette] as any)?.main || theme.palette.divider}`,
         "&:hover": {
           boxShadow: 4,
           transform: "translateY(-2px)",

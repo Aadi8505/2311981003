@@ -1,7 +1,3 @@
-/**
- * Frontend Types and Interfaces
- */
-
 export type NotificationType = 'Event' | 'Result' | 'Placement';
 
 export interface Notification {

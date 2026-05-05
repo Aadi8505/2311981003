@@ -1,8 +1,3 @@
-/**
- * Notification List Component
- * Displays all notifications
- */
-
 import React from "react";
 import {
   Box,
@@ -36,7 +31,6 @@ const NotificationList: React.FC<NotificationListProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Calculate statistics
   const stats = {
     total: notifications.length,
     unread: notifications.filter((n) => !n.IsRead).length,
@@ -72,7 +66,6 @@ const NotificationList: React.FC<NotificationListProps> = ({
           {title}
         </Typography>
 
-        {/* Statistics Card */}
         <Card
           sx={{
             mb: 3,
@@ -155,7 +148,6 @@ const NotificationList: React.FC<NotificationListProps> = ({
         </Box>
       )}
 
-      {/* Error State */}
       {error && !loading && (
         <Alert severity="error" sx={{ mb: 3 }}>
           <Typography variant="body2">
@@ -164,7 +156,6 @@ const NotificationList: React.FC<NotificationListProps> = ({
         </Alert>
       )}
 
-      {/* Empty State */}
       {!loading && !error && notifications.length === 0 && (
         <Card sx={{ textAlign: "center", py: 8 }}>
           <CardContent>
@@ -178,9 +169,8 @@ const NotificationList: React.FC<NotificationListProps> = ({
         </Card>
       )}
 
-      {/* Notifications List */}
       {!loading && !error && notifications.length > 0 && (
-        <Box>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {notifications.map((notification) => (
             <NotificationCard
               key={notification.ID}

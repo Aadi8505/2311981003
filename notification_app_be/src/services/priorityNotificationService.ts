@@ -1,8 +1,3 @@
-/**
- * Priority Notification Service
- * Fetches notifications from external API and ranks by priority
- */
-
 import axios, { AxiosError } from 'axios';
 import { Logger } from '../middleware/logger';
 import { config } from '../config';
@@ -27,9 +22,6 @@ export class PriorityNotificationService {
     this.logger = logger;
   }
 
-  /**
-   * Calculate recency score (0-9 scale)
-   */
   private calculateRecencyScore(timestamp: string): number {
     const notificationTime = new Date(timestamp);
     const now = new Date();
@@ -42,9 +34,6 @@ export class PriorityNotificationService {
     return 1;
   }
 
-  /**
-   * Get type weight for priority scoring
-   */
   private getTypeWeight(type: string): number {
     const weights = {
       'Placement': 5,
@@ -54,31 +43,19 @@ export class PriorityNotificationService {
     return weights[type as keyof typeof weights] || 0;
   }
 
-  /**
-   * Calculate priority score
-   * Formula: (Type Weight × 10) + Recency Score
-   */
   private calculatePriorityScore(notification: ExternalNotification): number {
     const typeWeight = this.getTypeWeight(notification.Type);
     const recencyScore = this.calculateRecencyScore(notification.Timestamp);
     return (typeWeight * 10) + recencyScore;
   }
 
-  /**
-   * Fetch notifications from external API
-   */
   async fetchNotificationsFromAPI(
     limit: number = 100,
     page: number = 1,
     notificationType?: NotificationType
   ): Promise<ExternalNotification[]> {
     try {
-      this.logger.log(
-        'backend',
-        'info',
-        'service',
-        `Fetching notifications from external API: limit=${limit}, page=${page}, type=${notificationType || 'all'}`
-      );
+      this.logger.log('backend', 'info', 'service', `Fetching notifications from external API: limit=${limit}, page=${page}, type=${notificationType || 'all'}`);
 
       const params = new URLSearchParams({
         limit: Math.min(limit, 100).toString(),
@@ -99,12 +76,7 @@ export class PriorityNotificationService {
 
       const notifications = response.data.notifications || [];
 
-      this.logger.log(
-        'backend',
-        'info',
-        'service',
-        `Successfully fetched ${notifications.length} notifications from external API`
-      );
+      this.logger.log('backend', 'info', 'service', `Successfully fetched ${notifications.length} notifications from external API`);
 
       return notifications;
 
@@ -113,21 +85,11 @@ export class PriorityNotificationService {
         ? `API Error: ${error.response?.status} - ${error.message}`
         : (error instanceof Error ? error.message : 'Unknown error');
 
-      this.logger.log(
-        'backend',
-        'warn',
-        'service',
-        `Failed to fetch notifications from external API: ${errorMsg}, using mock data as fallback`
-      );
+      this.logger.log('backend', 'warn', 'service', `Failed to fetch notifications from external API: ${errorMsg}, using mock data as fallback`);
 
-      // Return mock data as fallback for testing
       return this.getMockNotifications(limit, notificationType);
     }
   }
-
-  /**
-   * Get mock notifications for testing
-   */
   private getMockNotifications(limit: number, type?: NotificationType): ExternalNotification[] {
     const allMock: ExternalNotification[] = [
       {
@@ -180,37 +142,21 @@ export class PriorityNotificationService {
       }
     ];
 
-    // Filter by type if specified
     const filtered = type ? allMock.filter(n => n.Type === type) : allMock;
     return filtered.slice(0, limit);
   }
 
-  /**
-   * Get top N notifications sorted by priority
-   */
   async getTopNotifications(topN: number = 10): Promise<PriorityNotification[]> {
     try {
-      this.logger.log(
-        'backend',
-        'info',
-        'service',
-        `Starting priority calculation for top ${topN} notifications`
-      );
+      this.logger.log('backend', 'info', 'service', `Starting priority calculation for top ${topN} notifications`);
 
-      // Fetch more to ensure we have enough after any filtering
       const notifications = await this.fetchNotificationsFromAPI(topN * 2);
 
       if (notifications.length === 0) {
-        this.logger.log(
-          'backend',
-          'warn',
-          'service',
-          'No notifications found from external API'
-        );
+        this.logger.log('backend', 'warn', 'service', 'No notifications found from external API');
         return [];
       }
 
-      // Calculate priority scores
       const priorityNotifications: PriorityNotification[] = notifications.map(notif => {
         const typeWeight = this.getTypeWeight(notif.Type);
         const recencyScore = this.calculateRecencyScore(notif.Timestamp);
@@ -231,60 +177,35 @@ export class PriorityNotificationService {
         };
       });
 
-      // Sort by priority score (descending), then by timestamp (newest first)
       const sorted = priorityNotifications
         .sort((a, b) => {
           if (b.priorityScore !== a.priorityScore) {
             return b.priorityScore - a.priorityScore;
           }
-          return new Date(b.Timestamp).getTime() - new Date(a.Timestamp).getTime();
+          return new Date(b.CreatedAt).getTime() - new Date(a.CreatedAt).getTime();
         })
         .slice(0, Math.min(topN, 100));
 
-      this.logger.log(
-        'backend',
-        'info',
-        'service',
-        `Priority notifications calculated. Top ${sorted.length} selected.`
-      );
+      this.logger.log('backend', 'info', 'service', `Priority notifications calculated. Top ${sorted.length} selected.`);
 
-      // Log top 5 for debugging
       sorted.slice(0, 5).forEach((n, index) => {
-        this.logger.log(
-          'backend',
-          'debug',
-          'service',
-          `Priority #${index + 1}: Type=${n.Type}, Score=${n.priorityScore}, Message="${n.Message.substring(0, 50)}..."`
-        );
+        this.logger.log('backend', 'debug', 'service', `Priority #${index + 1}: Type=${n.Type}, Score=${n.priorityScore}, Message="${n.Message.substring(0, 50)}..."`);
       });
 
       return sorted;
 
     } catch (error) {
-      this.logger.log(
-        'backend',
-        'error',
-        'service',
-        `Error in getTopNotifications: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      this.logger.log('backend', 'error', 'service', `Error in getTopNotifications: ${error instanceof Error ? error.message : 'Unknown error'}`);
       throw error;
     }
   }
 
-  /**
-   * Get top N notifications filtered by type
-   */
   async getTopNotificationsByType(
     notificationType: NotificationType,
     topN: number = 10
   ): Promise<PriorityNotification[]> {
     try {
-      this.logger.log(
-        'backend',
-        'info',
-        'service',
-        `Fetching top ${topN} ${notificationType} notifications`
-      );
+      this.logger.log('backend', 'info', 'service', `Fetching top ${topN} ${notificationType} notifications`);
 
       const notifications = await this.fetchNotificationsFromAPI(topN * 3, 1, notificationType);
 
@@ -312,22 +233,12 @@ export class PriorityNotificationService {
         .sort((a, b) => b.priorityScore - a.priorityScore)
         .slice(0, Math.min(topN, 100));
 
-      this.logger.log(
-        'backend',
-        'info',
-        'service',
-        `Retrieved top ${sorted.length} ${notificationType} notifications`
-      );
+      this.logger.log('backend', 'info', 'service', `Retrieved top ${sorted.length} ${notificationType} notifications`);
 
       return sorted;
 
     } catch (error) {
-      this.logger.log(
-        'backend',
-        'error',
-        'service',
-        `Error fetching ${notificationType} notifications: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      this.logger.log('backend', 'error', 'service', `Error fetching ${notificationType} notifications: ${error instanceof Error ? error.message : 'Unknown error'}`);
       throw error;
     }
   }
